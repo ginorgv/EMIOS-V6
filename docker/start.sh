@@ -1,15 +1,9 @@
 #!/bin/bash
 # Script de entrada para Railway
-# Configura Nginx para escuchar en el puerto asignado por Railway ($PORT)
-# y arranca Supervisor para gestionar Nginx + PHP-FPM
+# Nginx escucha en puerto 80 (EXPOSE 80 en Dockerfile)
+# Railway enruta el tráfico automáticamente al puerto EXPOSE
 
 set -e
-
-# Configurar puerto de Nginx (Railway asigna $PORT, por defecto 8080)
-NGINX_PORT="${PORT:-80}"
-
-# Reemplazar el puerto en la configuración de Nginx
-sed -i "s/listen .*/listen ${NGINX_PORT};/" /etc/nginx/nginx.conf
 
 # Crear directorio de sesiones si no existe
 mkdir -p /tmp/sessions
