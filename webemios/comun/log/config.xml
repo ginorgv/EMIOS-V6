@@ -1,0 +1,24 @@
+<configuration xmlns="http://logging.apache.org/log4php/">
+    <appender name="standard_appender" class="LoggerAppenderRollingFile">
+    	<layout class="LoggerLayoutPattern">
+            <param name="conversionPattern" value="[%d{d/M/Y H\:i\:s,u}] {%p} [%F - %C.%M(), %L] '%message'%newline%ex" />
+      </layout>
+      <param name="File" value="myLog.log" />
+      <param name="MaxFileSize" value="10MB" />
+      <param name="MaxBackupIndex" value="10" />
+    </appender>
+    <appender name="warning_appender" class="LoggerAppenderRollingFile">
+    	<layout class="LoggerLayoutPattern">
+            <param name="conversionPattern" value="[%d{d/M/Y H\:i\:s,u}] {%p} [%F - %C.%M(), %L] '%message'%newline%ex" />
+      </layout>
+      <param name="File" value="myLog.log" />
+      <param name="MaxFileSize" value="10MB" />
+      <param name="MaxBackupIndex" value="10" />    
+    </appender>
+    
+    <root>
+        <level value="INFO" />
+        <appender_ref ref="standard_appender" />
+        <appender_ref ref="warning_appender" />
+    </root>
+</configuration>

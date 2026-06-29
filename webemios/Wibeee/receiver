@@ -1,0 +1,16 @@
+<?php
+    include_once('comprueba_tipo_peticion_http_wibeee.php');
+
+	include_once('directorio_raiz_wibeee.php');
+    include_once($_SESSION["directorio"].'/comun/log/log.php');
+    include_once($_SESSION["directorio"].'/comun/src/api/activa_captura_excepciones_wibeee.php');
+
+    include_once($_SESSION["directorio"].'/src/lib/herramientas/util_wibeee.php');
+
+
+    // Se procesa la petición 'receiver' Wibeee
+    $parametros = $_GET;
+    $log = dame_log("wibeee");
+    $log->info("Petición 'receiver' Wibeee (parámetros: '".json_encode($parametros)."')");
+    procesa_peticion_receiver_wibeee($parametros);
+?>

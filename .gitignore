@@ -1,0 +1,4 @@
+mariadb_data/
+backup_bd/
+*.log
+*.err

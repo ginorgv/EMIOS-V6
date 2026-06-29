@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>EMIOS - Variante Oscura</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --primary: #298B21;
+            --primary-dark: #1f6e19;
+            --primary-light: #52A652;
+            --primary-gradient: linear-gradient(135deg, #298B21, #3d9f36);
+            --sidebar-bg: #0f1923;
+            --sidebar-hover: #1a2d3d;
+            --sidebar-width: 280px;
+            --header-height: 60px;
+            --bg-body: #eef1f5;
+            --bg-card: #ffffff;
+            --text-primary: #1a2332;
+            --text-secondary: #6b7a8f;
+            --border-color: #e2e6ed;
+            --radius-sm: 8px;
+            --radius-md: 14px;
+            --radius-lg: 20px;
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.06);
+            --shadow-md: 0 6px 20px rgba(0,0,0,0.08);
+            --shadow-lg: 0 12px 40px rgba(0,0,0,0.1);
+            --transition: all 0.25s ease;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg-body);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* ===== SIDEBAR ===== */
+        #sidebar {
+            position: fixed; left: 0; top: 0; bottom: 0;
+            width: var(--sidebar-width);
+            background: var(--sidebar-bg);
+            display: flex; flex-direction: column;
+            z-index: 1000;
+        }
+
+        #sidebar-header {
+            padding: 20px 24px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            min-height: var(--header-height);
+        }
+
+        .sidebar-logo {
+            width: 36px; height: 36px;
+            background: var(--primary-gradient);
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            color: #fff; font-weight: 800; font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .sidebar-brand {
+            color: #fff;
+            font-weight: 700; font-size: 1.1rem;
+            letter-spacing: -0.5px;
+        }
+        .sidebar-brand span { color: var(--primary-light); font-weight: 400; }
+
+        /* Search */
+        #sidebar-search {
+            padding: 12px 16px;
+            position: relative;
+        }
+        #sidebar-search input {
+            width: 100%;
+            padding: 10px 14px 10px 38px;
+            border: none;
+            border-radius: var(--radius-sm);
+            background: rgba(255,255,255,0.08);
+            color: rgba(255,255,255,0.8);
+            font-size: 0.82rem;
+            font-family: inherit;
+            outline: none;
+            transition: var(--transition);
+        }
+        #sidebar-search input::placeholder { color: rgba(255,255,255,0.3); }
+        #sidebar-search input:focus { background: rgba(255,255,255,0.12); }
+        #sidebar-search i {
+            position: absolute;
+            left: 28px; top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255,255,255,0.3);
+            font-size: 0.85rem;
+        }
+
+        /* User */
+        #sidebar-user {
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            margin: 0 4px;
+        }
+        .user-avatar {
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+            display: flex; align-items: center; justify-content: center;
+            color: #fff; font-weight: 600; font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+        .user-name { color: #fff; font-weight: 500; font-size: 0.85rem; }
+        .user-role { color: rgba(255,255,255,0.35); font-size: 0.72rem; }
+
+        /* Network */
+        #sidebar-network {
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            margin: 0 4px;
+        }
+        .network-dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: var(--primary-light);
+            flex-shrink: 0;
+            animation: pulse-dot 2s infinite;
+        }
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+        .network-name { color: #fff; font-size: 0.82rem; font-weight: 500; }
+        .network-client { color: rgba(255,255,255,0.35); font-size: 0.72rem; margin-left: auto; }
+
+        /* Navigation */
+        #sidebar-nav {
+            flex: 1; overflow-y: auto;
+            padding: 8px 0;
+        }
+        #sidebar-nav::-webkit-scrollbar { width: 3px; }
+        #sidebar-nav::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+
+        .nav-item {
+            display: flex; align-items: center; gap: 12px;
+            padding: 10px 20px;
+            color: rgba(255,255,255,0.55);
+            text-decoration: none;
+            font-size: 0.88rem;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            margin: 1px 8px;
+            border-radius: var(--radius-sm);
+        }
+        .nav-item:hover {
+            background: rgba(255,255,255,0.06);
+            color: rgba(255,255,255,0.85);
+        }
+        .nav-item.active {
+            background: rgba(41, 139, 33, 0.2);
+            color: #fff;
+        }
+        .nav-item.active::before {
+            content: '';
+            position: absolute;
+            left: -8px; top: 50%;
+            transform: translateY(-50%);
+            width: 3px; height: 20px;
+            background: var(--primary);
+            border-radius: 0 3px 3px 0;
+        }
+        .nav-item i {
+            width: 20px; text-align: center;
+            font-size: 1rem;
+        }
+        .nav-item .badge {
+            margin-left: auto;
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: 500;
+        }
+        .badge-green { background: rgba(41,139,33,0.3); color: var(--primary-light); }
+        .badge-blue { background: rgba(37,99,235,0.3); color: #60a5fa; }
+        .badge-orange { background: rgba(234,88,12,0.3); color: #fb923c; }
+
+        /* Main */
+        #main-content {
+            margin-left: var(--sidebar-width);
+            flex: 1; display: flex; flex-direction: column;
+            min-height: 100vh;
+        }
+
+        #top-header {
+            height: var(--header-height);
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border-color);
+            display: flex; align-items: center;
+            justify-content: space-between;
+            padding: 0 32px;
+            position: sticky; top: 0; z-index: 100;
+        }
+        .breadcrumb {
+            display: flex; align-items: center; gap: 8px;
+            font-size: 0.85rem;
+        }
+        .breadcrumb a { color: var(--text-secondary); text-decoration: none; }
+        .breadcrumb a:hover { color: var(--primary); }
+        .breadcrumb span { color: var(--text-primary); font-weight: 600; }
+        .breadcrumb i { color: var(--text-secondary); font-size: 0.7rem; }
+
+        .header-actions {
+            display: flex; align-items: center; gap: 8px;
+        }
+        .header-btn {
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 1rem;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .header-btn:hover { background: var(--bg-body); color: var(--text-primary); }
+        .header-btn.logout {
+            width: auto;
+            padding: 0 14px;
+            border-radius: var(--radius-sm);
+            gap: 6px;
+            font-size: 0.82rem;
+            color: #dc2626;
+        }
+        .header-btn.logout:hover { background: #fee2e2; }
+
+        #content-body {
+            flex: 1; padding: 28px 32px;
+        }
+
+        .page-header {
+            margin-bottom: 24px;
+        }
+        .page-header h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        .page-header p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-top: 4px;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex; gap: 4px;
+            margin-bottom: 24px;
+            background: var(--bg-card);
+            padding: 4px;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
+        }
+        .tab {
+            padding: 10px 20px;
+            border-radius: var(--radius-sm);
+            border: none;
+            background: transparent;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: inherit;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .tab:hover { color: var(--text-primary); background: var(--bg-body); }
+        .tab.active { background: var(--primary-gradient); color: #fff; box-shadow: 0 4px 12px rgba(41,139,33,0.3); }
+        .tab i { font-size: 0.9rem; }
+
+        /* Grid */
+        .grid-4 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: var(--radius-md);
+            padding: 20px 24px;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+        }
+        .card:hover { box-shadow: var(--shadow-md); }
+        .card-header {
+            display: flex; align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+        .card-title {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .card-value {
+            font-size: 2rem;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+        .card-change {
+            font-size: 0.78rem;
+            margin-top: 4px;
+        }
+        .card-change.up { color: #16a34a; }
+        .card-change.down { color: #dc2626; }
+
+        .icon-circle {
+            width: 44px; height: 44px;
+            border-radius: var(--radius-sm);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem;
+        }
+        .bg-green-light { background: #dcfce7; color: #16a34a; }
+        .bg-blue-light { background: #dbeafe; color: #2563eb; }
+        .bg-orange-light { background: #ffedd5; color: #ea580c; }
+        .bg-purple-light { background: #f3e8ff; color: #9333ea; }
+
+        /* Table card */
+        .table-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+        .table-card .table-header {
+            padding: 16px 24px;
+            display: flex; align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .table-card .table-header h3 {
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+        .table-actions {
+            display: flex; gap: 8px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: var(--radius-sm);
+            border: none;
+            font-size: 0.82rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: inherit;
+            display: inline-flex; align-items: center; gap: 6px;
+        }
+        .btn-primary {
+            background: var(--primary-gradient);
+            color: #fff;
+        }
+        .btn-primary:hover {
+            box-shadow: 0 4px 14px rgba(41,139,33,0.35);
+            transform: translateY(-1px);
+        }
+        .btn-ghost {
+            background: transparent;
+            color: var(--text-secondary);
+        }
+        .btn-ghost:hover { background: var(--bg-body); }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table th {
+            padding: 12px 24px;
+            text-align: left;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: var(--bg-body);
+            border-bottom: 1px solid var(--border-color);
+        }
+        table td {
+            padding: 12px 24px;
+            font-size: 0.88rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        table tr:last-child td { border-bottom: none; }
+        table tbody tr { transition: var(--transition); }
+        table tbody tr:hover { background: rgba(41,139,33,0.02); }
+
+        .tag {
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        .tag-ok { background: #dcfce7; color: #16a34a; }
+        .tag-warn { background: #ffedd5; color: #ea580c; }
+        .tag-err { background: #fee2e2; color: #dc2626; }
+
+        #footer {
+            padding: 16px 32px;
+            border-top: 1px solid var(--border-color);
+            display: flex; align-items: center;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            background: var(--bg-card);
+        }
+
+        @media (max-width: 1200px) {
+            .grid-4 { grid-template-columns: repeat(2, 1fr); }
+            .grid-3 { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 768px) {
+            #sidebar { width: 0; overflow: hidden; }
+            #main-content { margin-left: 0; }
+            .grid-4, .grid-3, .grid-2 { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<aside id="sidebar">
+    <div id="sidebar-header">
+        <div class="sidebar-logo">E</div>
+        <div class="sidebar-brand">emios <span>v5.4</span></div>
+    </div>
+
+    <div id="sidebar-search">
+        <i class="fas fa-search"></i>
+        <input type="text" placeholder="Buscar módulos...">
+    </div>
+
+    <div id="sidebar-user">
+        <div class="user-avatar">RV</div>
+        <div>
+            <div class="user-name">Raúl Vázquez</div>
+            <div class="user-role">Superadministrador</div>
+        </div>
+    </div>
+
+    <div id="sidebar-network">
+        <div class="network-dot"></div>
+        <div class="network-name">Pruebas Península</div>
+        <div class="network-client">#1</div>
+    </div>
+
+    <nav id="sidebar-nav">
+        <div class="nav-item active"><i class="fas fa-chart-line"></i> Monitorización <span class="badge badge-blue">12</span></div>
+        <div class="nav-item"><i class="fas fa-cog"></i> Administración</div>
+        <div class="nav-item"><i class="fas fa-user"></i> Personal</div>
+        <div class="nav-item"><i class="fas fa-globe"></i> Red</div>
+        <div class="nav-item"><i class="fas fa-map-marker-alt"></i> Localizaciones</div>
+        <div class="nav-item"><i class="fas fa-microchip"></i> Sensores <span class="badge badge-green">147</span></div>
+        <div class="nav-item"><i class="fas fa-plug"></i> Actuadores <span class="badge badge-orange">1</span></div>
+        <div class="nav-item"><i class="fas fa-bolt"></i> SmartMeter</div>
+        <div class="nav-item"><i class="fas fa-tasks"></i> Proyectos</div>
+    </nav>
+</aside>
+
+<!-- Main -->
+<div id="main-content">
+    <header id="top-header">
+        <div class="breadcrumb">
+            <a href="#">Inicio</a> <i class="fas fa-chevron-right"></i>
+            <a href="#">Monitorización</a> <i class="fas fa-chevron-right"></i>
+            <span>Procesado de datos</span>
+        </div>
+        <div class="header-actions">
+            <button class="header-btn"><i class="far fa-bell"></i></button>
+            <button class="header-btn"><i class="far fa-question-circle"></i></button>
+            <button class="header-btn logout"><i class="fas fa-sign-out-alt"></i> Salir</button>
+        </div>
+    </header>
+
+    <div id="content-body">
+        <div class="page-header">
+            <h1>Monitorización</h1>
+            <p>Procesado de datos, alarmas y acciones de la red Pruebas Península</p>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab active"><i class="fas fa-history"></i> Procesado de datos</button>
+            <button class="tab"><i class="fas fa-exclamation-triangle"></i> Alarmas</button>
+            <button class="tab"><i class="fas fa-bolt"></i> Acciones</button>
+        </div>
+
+        <!-- Stats -->
+        <div class="grid-4">
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Sensores</span>
+                    <div class="icon-circle bg-green-light"><i class="fas fa-microchip"></i></div>
+                </div>
+                <div class="card-value">147</div>
+                <div class="card-change up"><i class="fas fa-arrow-up"></i> 3 nuevos esta semana</div>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Ejecuciones hoy</span>
+                    <div class="icon-circle bg-blue-light"><i class="fas fa-play-circle"></i></div>
+                </div>
+                <div class="card-value">1,284</div>
+                <div class="card-change up"><i class="fas fa-arrow-up"></i> 12% más que ayer</div>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Alarmas activas</span>
+                    <div class="icon-circle bg-orange-light"><i class="fas fa-exclamation-triangle"></i></div>
+                </div>
+                <div class="card-value">3</div>
+                <div class="card-change down"><i class="fas fa-arrow-down"></i> 2 menos que ayer</div>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Proyectos</span>
+                    <div class="icon-circle bg-purple-light"><i class="fas fa-tasks"></i></div>
+                </div>
+                <div class="card-value">7</div>
+                <div class="card-change">En progreso</div>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div class="table-card">
+            <div class="table-header">
+                <h3><i class="fas fa-history" style="color:var(--primary);margin-right:8px;"></i> Histórico de procesado</h3>
+                <div class="table-actions">
+                    <button class="btn btn-ghost"><i class="fas fa-sync-alt"></i></button>
+                    <button class="btn btn-primary"><i class="fas fa-download"></i> Exportar</button>
+                </div>
+            </div>
+            <table>
+                <thead>
+                    <tr><th>Fecha</th><th>Tipo</th><th>Clase</th><th>Granularidad</th><th>Tiempo</th><th>Estado</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>27/06 14:30</td><td>Normal</td><td>Energía activa</td><td>Horaria</td><td>2.34s</td><td><span class="tag tag-ok">Completado</span></td></tr>
+                    <tr><td>27/06 14:00</td><td>Normal</td><td>Temperatura</td><td>Cuartohoraria</td><td>1.87s</td><td><span class="tag tag-ok">Completado</span></td></tr>
+                    <tr><td>27/06 13:00</td><td>Recálculo</td><td>Gas</td><td>Horaria</td><td>5.12s</td><td><span class="tag tag-ok">Completado</span></td></tr>
+                    <tr><td>27/06 12:45</td><td>Normal</td><td>Humedad</td><td>Cuartohoraria</td><td>0.95s</td><td><span class="tag tag-warn">Pendiente</span></td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- SmartMeter preview -->
+        <div class="grid-2">
+            <div class="card">
+                <div class="card-header"><span class="card-title">Consumos eléctricos</span><i class="fas fa-bolt" style="color:#ea580c;"></i></div>
+                <div style="height:120px;background:linear-gradient(90deg,var(--primary) 0%,var(--primary-light) 40%,#60a5fa 70%,#fbbf24 100%);border-radius:8px;opacity:0.15;margin-bottom:12px;position:relative;">
+                    <div style="position:absolute;bottom:0;left:0;right:0;height:80px;background:linear-gradient(90deg,var(--primary) 0%,var(--primary-light) 40%,#60a5fa 70%,#fbbf24 100%);border-radius:8px;opacity:0.6;"></div>
+                </div>
+                <div style="display:flex;justify-content:space-between;">
+                    <div><span style="color:var(--text-secondary);font-size:0.75rem;">Hoy</span><br><strong>2,847 kWh</strong></div>
+                    <div><span style="color:var(--text-secondary);font-size:0.75rem;">Este mes</span><br><strong>84,321 kWh</strong></div>
+                    <div><span style="color:var(--text-secondary);font-size:0.75rem;">Coste</span><br><strong>12,847 €</strong></div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header"><span class="card-title">Localizaciones activas</span><i class="fas fa-map-marker-alt" style="color:#2563eb;"></i></div>
+                <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;">
+                    <span style="padding:6px 14px;background:var(--bg-body);border-radius:20px;font-size:0.82rem;">🏢 Almogavares</span>
+                    <span style="padding:6px 14px;background:var(--bg-body);border-radius:20px;font-size:0.82rem;">🏢 Ambassador</span>
+                    <span style="padding:6px 14px;background:var(--bg-body);border-radius:20px;font-size:0.82rem;">🏢 Francisco Rojas</span>
+                    <span style="padding:6px 14px;background:var(--bg-body);border-radius:20px;font-size:0.82rem;">🏢 Mariana Pineda</span>
+                    <span style="padding:6px 14px;background:var(--bg-body);border-radius:20px;font-size:0.82rem;">📍 Barcelona</span>
+                    <span style="padding:6px 14px;background:var(--bg-body);border-radius:20px;font-size:0.82rem;">📍 Madrid</span>
+                    <span style="padding:6px 14px;background:var(--bg-body);border-radius:20px;font-size:0.82rem;">+5 más</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer id="footer">
+        <span>EMIOS v5.4.0.6 r1</span>
+        <span><i class="far fa-clock"></i> 27/06/2026, 16:30:00</span>
+        <span>© EnergyMinus</span>
+    </footer>
+</div>
+
+</body>
+</html>

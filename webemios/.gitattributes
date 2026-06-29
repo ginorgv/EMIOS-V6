@@ -1,0 +1,17 @@
+* text=auto
+
+# Declara explícitamente los archivos de texto que siempre quieres que estén normalizados y convertidos
+# a finales de línea nativos en el control.
+*.c text
+*.h text
+*.py text eol=lf
+*.sh text eol=lf
+*.php text eol=lf
+
+# Declara los archivos que siempre tendrán los finales de línea CRLF en el control.
+*.sln text eol=lf
+
+# Denota todos los archivos que son absolutamente binarios y no deberían modificarse.
+*.png binary
+*.jpg binary
+

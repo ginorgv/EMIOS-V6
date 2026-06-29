@@ -1,0 +1,95 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+</head>
+
+<body>
+    </br>
+    <table width="100%" style="margin: 0; padding: 5px; font-family: arial; font-size: 10pt; color: #FFFFFF; background-color: #999999; font-weight: bold;">
+        <tr>
+            <td width="40%" style="text-align: left; "><span id="texto_titulo_izquierda_pie_pagina"></span></td>
+            <td width="20%" style="text-align: center; "><span id="texto_numero_pagina_pie_pagina"></span></td>
+            <td width="40%" style="text-align: right; "><span id="texto_titulo_derecha_pie_pagina"></span></td>
+        </tr>
+    </table>
+</body>
+</html>
+
+<script>
+    window.onload = function() {
+        var parametros_paginas = {};
+        var lista_parametros_paginas = document.location.search.substring(1).split('&');
+        for (var indice_lista_parametros_paginas in lista_parametros_paginas) {
+            var nombre_valor_parametro = lista_parametros_paginas[indice_lista_parametros_paginas].split('=', 2);
+            parametros_paginas[nombre_valor_parametro[0]] = unescape(nombre_valor_parametro[1]);
+        }
+
+        // Nota: Se añade la opción de margen de 15mm porque al hacer el 'split' (en python)
+        // (aunque sea manualmente con un bucle, se eliminaba el margen)
+        var url_informe = parametros_paginas['webpage'];
+        var parametros_url_informe = {};
+        url_informe.split("&").forEach(function(cadena_nombre_valor_parametro) {
+            var nombre_valor_parametro = cadena_nombre_valor_parametro.split("=");
+            parametros_url_informe[nombre_valor_parametro[0]] = decodeURIComponent(nombre_valor_parametro[1]);
+        });
+
+        // Recuperación de parámetros de pie de página
+        var mostrar_numeros_pagina = true;
+        var numero_pagina_inicial = 1;
+        var mostrar_numero_paginas_totales = 1;
+        var numero_paginas_totales_automatico = 1;
+        var numero_paginas_totales_manual = 0;
+        var texto_titulo_izquierda_pie_pagina = "";
+        var texto_titulo_derecha_pie_pagina = "";
+        if ("mostrar_numeros_pagina" in parametros_url_informe) {
+            mostrar_numeros_pagina = parametros_url_informe["mostrar_numeros_pagina"];
+        }
+        if ("numero_pagina_inicial" in parametros_url_informe) {
+            numero_pagina_inicial = parametros_url_informe["numero_pagina_inicial"];
+        }
+        if ("mostrar_numero_paginas_totales" in parametros_url_informe) {
+            mostrar_numero_paginas_totales = parametros_url_informe["mostrar_numero_paginas_totales"];
+        }
+        if ("numero_paginas_totales_automatico" in parametros_url_informe) {
+            numero_paginas_totales_automatico = parametros_url_informe["numero_paginas_totales_automatico"];
+        }
+        if ("numero_paginas_totales_manual" in parametros_url_informe) {
+            numero_paginas_totales_manual = parametros_url_informe["numero_paginas_totales_manual"];
+        }
+        if ("texto_titulo_izquierda_pie_pagina" in parametros_url_informe) {
+            texto_titulo_izquierda_pie_pagina = decodeURIComponent(parametros_url_informe["texto_titulo_izquierda_pie_pagina"].replace(/\+/g, ' '));
+        }
+        if ("texto_titulo_derecha_pie_pagina" in parametros_url_informe) {
+            texto_titulo_derecha_pie_pagina = decodeURIComponent(parametros_url_informe["texto_titulo_derecha_pie_pagina"].replace(/\+/g, ' '));
+        }
+
+        // Texto de número de pie de página
+        if (mostrar_numeros_pagina == true) {
+            var texto_numero_pagina_pie_pagina = parseInt(parametros_paginas['page']) + (numero_pagina_inicial - 1);
+            if (mostrar_numero_paginas_totales == 1) {
+                texto_numero_pagina_pie_pagina += " / ";
+                if (numero_paginas_totales_automatico == 1) {
+                    texto_numero_pagina_pie_pagina += parseInt(parametros_paginas['topage']);
+                }
+                else {
+                    texto_numero_pagina_pie_pagina += parseInt(numero_paginas_totales_manual);
+                }
+            }
+        }
+        else {
+            var texto_numero_pagina_pie_pagina = "-";
+        }
+        var elemento_texto_numero_pagina_pie_pagina = document.getElementById('texto_numero_pagina_pie_pagina');
+        elemento_texto_numero_pagina_pie_pagina.textContent = texto_numero_pagina_pie_pagina;
+        if (mostrar_numeros_pagina == false) {
+            elemento_texto_numero_pagina_pie_pagina.style.color = "#999999";
+        }
+
+        // Textos izquierdo y derecho en el pie de página
+        var elemento_texto_titulo_izquierda_pie_pagina = document.getElementById('texto_titulo_izquierda_pie_pagina');
+        elemento_texto_titulo_izquierda_pie_pagina.textContent = texto_titulo_izquierda_pie_pagina;
+        var elemento_texto_titulo_derecha_pie_pagina = document.getElementById('texto_titulo_derecha_pie_pagina');
+        elemento_texto_titulo_derecha_pie_pagina.textContent = texto_titulo_derecha_pie_pagina;
+    };
+</script>

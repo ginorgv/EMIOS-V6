@@ -1,0 +1,12 @@
+<configuration xmlns="http://logging.apache.org/log4php/">
+    <appender name="standard_appender" class="LoggerAppenderNull">    	
+    </appender>
+    <appender name="warning_appender" class="LoggerAppenderNull">    	
+    </appender>
+    
+    <root>
+        <level value="INFO" />
+        <appender_ref ref="standard_appender" />
+        <appender_ref ref="warning_appender" />
+    </root>
+</configuration>
