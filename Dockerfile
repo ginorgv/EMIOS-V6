@@ -13,6 +13,7 @@ RUN apt-get update && apt-get install -y \
     libicu-dev \
     unzip \
     git \
+    gettext-base \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-configure intl \
     && docker-php-ext-install -j$(nproc) \
@@ -50,8 +51,10 @@ RUN mkdir -p /tmp/sessions /var/www/html/webemios/tmp \
     && chown -R www-data:www-data /tmp/sessions \
     && chown -R www-data:www-data /var/www/html/webemios/tmp
 
-# Exponer puerto
+# Exponer puerto (Railway usa $PORT, por defecto 80)
 EXPOSE 80
 
-# Iniciar servicios
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
+# Script de entrada: sustituir ${PORT} en nginx.conf y arrancar servicios
+CMD envsubst '${PORT}' < /etc/nginx/nginx.conf > /etc/nginx/nginx.conf.tmp \
+    && mv /etc/nginx/nginx.conf.tmp /etc/nginx/nginx.conf \
+    && /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
