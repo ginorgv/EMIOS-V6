@@ -10,9 +10,11 @@ RUN apt-get update && apt-get install -y \
     libonig-dev \
     libzip-dev \
     libcurl4-openssl-dev \
+    libicu-dev \
     unzip \
     git \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-configure intl \
     && docker-php-ext-install -j$(nproc) \
         mysqli \
         pdo \
