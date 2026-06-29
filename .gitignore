@@ -1,4 +1,27 @@
+# EMIOS específico
 mariadb_data/
 backup_bd/
 *.log
 *.err
+
+# Dependencias
+webemios/vendor/
+vendor/
+
+# Docker
+docker/data/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# PHP
+webemios/composer.lock
+composer.lock

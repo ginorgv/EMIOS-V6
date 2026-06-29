@@ -31,33 +31,86 @@
 
 
     // Devuelve las entradas del fichero de inicio
+    // Soporta variables de entorno para despliegue en Railway/Cloud
     function dame_entradas_ini()
 	{
-        $entradas_ini = parse_ini_file($_SESSION["directorio"].RUTA_FICHERO_INI);
-        if ($entradas_ini == false)
-        {
-            throw new Exception("No se ha encontrado el fichero de configuración de Web Emios: '".
-                $_SESSION["directorio"].RUTA_FICHERO_INI."'");
-        }
-        
-        // Convertir rutas Linux a Windows si es necesario
-        $ruta_base_servidor_emios = dame_ruta_local($entradas_ini["ruta_fichero_ini_servidor_emios"]);
-        $entradas_ini_servidor_emios = parse_ini_file($ruta_base_servidor_emios.NOMBRE_FICHERO_INI_SERVIDOR_EMIOS);
-        
-        // Si no encuentra el archivo en la ruta convertida, intentar tambien en el directorio del proyecto
-        if ($entradas_ini_servidor_emios == false && PHP_OS_FAMILY === 'Windows')
-        {
-            $ruta_alternativa = $_SESSION["directorio"] . '\\tmp\\' . NOMBRE_FICHERO_INI_SERVIDOR_EMIOS;
-            $entradas_ini_servidor_emios = parse_ini_file($ruta_alternativa);
-        }
-        
-        if ($entradas_ini_servidor_emios == false)
-        {
-            throw new Exception("No se ha encontrado el fichero de configuración del Sistema Emios: '".
-                $ruta_base_servidor_emios.NOMBRE_FICHERO_INI_SERVIDOR_EMIOS."'");
+        // Intentar cargar config.ini (puede no existir en cloud)
+        $entradas_ini = array();
+        $ruta_ini = $_SESSION["directorio"].RUTA_FICHERO_INI;
+        if (file_exists($ruta_ini)) {
+            $entradas_ini_fichero = parse_ini_file($ruta_ini);
+            if ($entradas_ini_fichero !== false) {
+                $entradas_ini = $entradas_ini_fichero;
+            }
         }
 
-        // Convertir rutas adicionales
+        // Sobrescribir con variables de entorno (Railway/Cloud)
+        // Railway MySQL plugin proporciona: MYSQL_URL (mysql://user:pass@host:port/db)
+        // o individualmente: MYSQL_HOST, MYSQL_PORT, MYSQL_DATABASE, MYSQL_USER, MYSQL_PASSWORD
+        $mysql_url = getenv('MYSQL_URL');
+        $mysql_host = getenv('MYSQL_HOST') ?: 'localhost';
+        $mysql_port = getenv('MYSQL_PORT') ?: '3306';
+        $mysql_db   = getenv('MYSQL_DATABASE') ?: 'emios';
+        $mysql_user = getenv('MYSQL_USER') ?: 'emios_user';
+        $mysql_pass = getenv('MYSQL_PASSWORD') ?: '';
+
+        // Parsear MYSQL_URL si está disponible (formato: mysql://user:pass@host:port/db)
+        if ($mysql_url) {
+            $parts = parse_url($mysql_url);
+            if ($parts !== false && isset($parts['scheme']) && $parts['scheme'] === 'mysql') {
+                $mysql_host = $parts['host'] ?? $mysql_host;
+                $mysql_port = isset($parts['port']) ? (string)$parts['port'] : $mysql_port;
+                $mysql_user = $parts['user'] ?? $mysql_user;
+                $mysql_pass = $parts['pass'] ?? $mysql_pass;
+                $mysql_db   = isset($parts['path']) ? ltrim($parts['path'], '/') : $mysql_db;
+            }
+        }
+
+        $entradas_ini["ip_base_datos_red"] = $mysql_host;
+        $entradas_ini["puerto_base_datos_red"] = $mysql_port;
+        $entradas_ini["nombre_base_datos_red"] = $mysql_db;
+        $entradas_ini["usuario_base_datos_red"] = $mysql_user;
+        $entradas_ini["contrasenya_base_datos_red"] = $mysql_pass;
+
+        $entradas_ini["ip_base_datos_datos"] = $mysql_host;
+        $entradas_ini["puerto_base_datos_datos"] = $mysql_port;
+        $entradas_ini["nombre_base_datos_datos"] = $mysql_db;
+        $entradas_ini["usuario_base_datos_datos"] = $mysql_user;
+        $entradas_ini["contrasenya_base_datos_datos"] = $mysql_pass;
+
+        // Intentar cargar servidor_emios.ini (puede no existir en cloud)
+        $ip_externa = 'localhost';
+        $ruta_ini_servidor = null;
+        
+        if (isset($entradas_ini["ruta_fichero_ini_servidor_emios"])) {
+            $ruta_base_servidor_emios = dame_ruta_local($entradas_ini["ruta_fichero_ini_servidor_emios"]);
+            $ruta_ini_servidor = $ruta_base_servidor_emios . NOMBRE_FICHERO_INI_SERVIDOR_EMIOS;
+        }
+        
+        $entradas_ini_servidor_emios = false;
+        
+        if ($ruta_ini_servidor && file_exists($ruta_ini_servidor)) {
+            $entradas_ini_servidor_emios = parse_ini_file($ruta_ini_servidor);
+        }
+        
+        // Fallback: buscar en tmp/ (Windows o cloud)
+        if ($entradas_ini_servidor_emios == false) {
+            $ruta_tmp = $_SESSION["directorio"] . DIRECTORY_SEPARATOR . 'tmp' . DIRECTORY_SEPARATOR . NOMBRE_FICHERO_INI_SERVIDOR_EMIOS;
+            if (file_exists($ruta_tmp)) {
+                $entradas_ini_servidor_emios = parse_ini_file($ruta_tmp);
+            }
+        }
+        
+        if ($entradas_ini_servidor_emios !== false && isset($entradas_ini_servidor_emios["ip_externa"])) {
+            $ip_externa = $entradas_ini_servidor_emios["ip_externa"];
+        }
+        
+        // Sobrescribir con variable de entorno
+        if (getenv('IP_EXTERNA')) {
+            $ip_externa = getenv('IP_EXTERNA');
+        }
+
+        // Convertir rutas adicionales (solo Windows)
         if (PHP_OS_FAMILY === 'Windows') {
             if (isset($entradas_ini["ruta_procesado_emios"])) {
                 $entradas_ini["ruta_procesado_emios"] = dame_ruta_local($entradas_ini["ruta_procesado_emios"]);
@@ -67,9 +120,17 @@
             }
         }
 
-        // Se añaden entradas del fichero de configuración del Sistema Emios
-        $entradas_ini["ip_servidor_emios"] = $entradas_ini_servidor_emios["ip_externa"];
-        $entradas_ini["web_emios"] = $entradas_ini_servidor_emios["ip_externa"];
+        // Valores por defecto para cloud si no existen rutas
+        if (!isset($entradas_ini["ruta_procesado_emios"])) {
+            $entradas_ini["ruta_procesado_emios"] = "/opt/energyminus/procesado/";
+        }
+        if (!isset($entradas_ini["ruta_servicios_emios"])) {
+            $entradas_ini["ruta_servicios_emios"] = "/opt/energyminus/servicios/";
+        }
+
+        // IP externa del servidor EMIOS
+        $entradas_ini["ip_servidor_emios"] = $ip_externa;
+        $entradas_ini["web_emios"] = $ip_externa;
 
         return ($entradas_ini);
     }

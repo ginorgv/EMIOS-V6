@@ -1,0 +1,29 @@
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Entorno local
+.env
+.env.local
+.vscode/
+.idea/
+
+# Sistemas operativos
+.DS_Store
+Thumbs.db
+
+# Docker
+docker/data/
+
+# Logs
+*.log
+*.err
+
+# Datos locales
+mariadb_data/
+backup_bd/
+tmp/servidor_emios.ini
+
+# Documentación fuente
+documentacion/

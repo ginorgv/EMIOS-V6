@@ -1,0 +1,22 @@
+{
+    "name": "emios/web",
+    "description": "EMIOS - Sistema de monitorización y telecontrol energético",
+    "type": "project",
+    "require": {
+        "php": ">=7.4",
+        "ext-mysqli": "*",
+        "ext-json": "*",
+        "ext-mbstring": "*",
+        "ext-gd": "*"
+    },
+    "scripts": {
+        "post-install-cmd": [
+            "echo 'EMIOS deployment ready'"
+        ]
+    },
+    "config": {
+        "platform": {
+            "php": "7.4"
+        }
+    }
+}
