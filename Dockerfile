@@ -31,6 +31,7 @@ RUN apt-get update && apt-get install -y \
 
 # Configurar PHP
 COPY docker/php.ini /usr/local/etc/php/conf.d/custom.ini
+COPY docker/www.conf /usr/local/etc/php-fpm.d/www.conf
 
 # Configurar Nginx
 COPY docker/nginx.conf /etc/nginx/nginx.conf
