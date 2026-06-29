@@ -5,9 +5,9 @@
 
 set -e
 
-# Si $PORT es diferente de 80 y 8080, añadirlo como listen adicional
-if [ -n "$PORT" ] && [ "$PORT" != "80" ] && [ "$PORT" != "8080" ]; then
-    sed -i "s/listen 8080;/listen 8080;\n        listen $PORT;/" /etc/nginx/nginx.conf
+# Si $PORT no está ya en la configuración, añadirlo como listen adicional
+if [ -n "$PORT" ] && ! grep -q "listen $PORT;" /etc/nginx/nginx.conf; then
+    sed -i "s/listen 9000;/listen 9000;\n        listen $PORT;/" /etc/nginx/nginx.conf
 fi
 
 # Crear directorio de sesiones si no existe
