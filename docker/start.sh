@@ -1,7 +1,5 @@
 #!/bin/bash
 # Script de entrada para Railway
-# Nginx escucha en puerto 80 (EXPOSE) y en $PORT (healthcheck/tráfico)
-# Railway enruta tráfico público al EXPOSE y healthcheck al $PORT
 
 set -e
 
