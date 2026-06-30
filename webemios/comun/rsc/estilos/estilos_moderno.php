@@ -68,7 +68,7 @@ body {
     flex-shrink: 0 !important;
     margin-right: 12px !important;
 }
-    height: 32px !important; filter: brightness(0) invert(1); opacity: 0.95; }
+    height: 18px !important; filter: brightness(0) invert(1); opacity: 0.95; }
 .logo-texto { color: #fff; font-weight: 700; font-size: 1.1rem; display: inline; letter-spacing: 0.3px; }
 .logo-texto small { font-weight: 400; color: var(--primary-lighter); font-size: 0.7rem; }
 
@@ -361,12 +361,23 @@ body {
     color: #1f2937 !important;
     font-size: 0.85rem !important;
     line-height: 1.4 !important;
+    display: flex !important;
+    align-items: center !important;
 }
 .contenido-fila-tabla-datos:hover { background: rgba(41,139,33,0.04) !important; }
+/* Sin hover en filas de filtro */
+.contenido-fila-tabla-datos[id*="filtro"]:hover { background: #fff !important; }
+/* Sin hover en fila de selección de localización */
+.contenido-fila-tabla-datos#fila_seleccion-localizacion-actual:hover { background: #fff !important; }
 .detalle-tabla-datos { margin-top: 0 !important; }
 /* Opciones de fila (iconos editar/eliminar) */
 .contenedor-opciones-fila-tabla-datos {
     padding: 2px 4px !important;
+    float: none !important;
+}
+.contenedor-datos-fila-tabla-datos-con-opciones,
+.contenedor-datos-fila-tabla-datos-sin-opciones {
+    float: none !important;
 }
 .contenedor-opciones-fila-tabla-datos i {
     color: var(--primary) !important;
@@ -655,7 +666,7 @@ button.boton-formulario {
     align-items: center !important;
     justify-content: center !important;
     padding: 30px !important;
-    background: rgba(255,255,255,0.95) !important;
+    background: transparent !important;
     border-radius: 16px !important;
     box-shadow: 0 8px 32px rgba(0,0,0,0.15) !important;
 }
@@ -786,6 +797,18 @@ select { cursor: pointer !important; }
     padding: 5px 8px !important;
     font-size: 0.82rem !important;
 }
+.filtro-informes .btn,
+.filtro-informes button {
+    margin: 0 !important;
+}
+/* Etiqueta + dropdown en horizontal */
+.filtro-informes [id*="perfil"] > div,
+.filtro-informes [id*="control_perfil"] {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 6px !important;
+}
 .contenido-fila-tabla-datos[id*="filtro"] {
     display: flex !important;
     flex-wrap: wrap !important;
@@ -856,6 +879,11 @@ input[type=submit]:hover, button[type=submit]:hover {
     box-shadow: 0 4px 14px rgba(41,139,33,0.35) !important;
     transform: translateY(-1px) !important;
     color: #fff !important;
+}
+
+/* Ajuste vertical del botón de selección de localización respecto al desplegable */
+#tabla-seleccion-localizacion-actual button.boton-formulario {
+    margin-top: 1.8em !important;
 }
 
 /* ===== INFORMACIÓN ICONS ===== */

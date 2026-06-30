@@ -97,7 +97,6 @@
                     }
                     print($html_logo);
                 ?>
-                <span class='logo-texto'>EMIOS <small>v6</small></span>
             </span>
 
             <!-- Navegación horizontal dentro del header -->
