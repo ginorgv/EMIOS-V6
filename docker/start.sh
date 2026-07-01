@@ -3,9 +3,12 @@
 
 set -e
 
-# Si $PORT no está ya en la configuración, añadirlo como listen adicional
-if [ -n "$PORT" ] && ! grep -q "listen $PORT;" /etc/nginx/nginx.conf; then
-    sed -i "s/listen 9000;/listen 9000;\n        listen $PORT;/" /etc/nginx/nginx.conf
+# Forzar que PHP-FPM escuche en 127.0.0.1:9001 (modificar docker.conf de la imagen base)
+sed -i "s/listen = 9000/listen = 127.0.0.1:9001/" /usr/local/etc/php-fpm.d/docker.conf 2>/dev/null || true
+
+# Añadir $PORT como puerto adicional en Nginx si no está ya configurado
+if [ -n "$PORT" ] && ! grep -q "listen 0.0.0.0:$PORT;" /etc/nginx/nginx.conf; then
+    sed -i "s/listen 0.0.0.0:9000;/listen 0.0.0.0:9000;\n    listen 0.0.0.0:$PORT;/" /etc/nginx/nginx.conf
 fi
 
 # Crear directorio de sesiones si no existe

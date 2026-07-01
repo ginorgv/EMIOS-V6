@@ -34,7 +34,6 @@ RUN rm -f /etc/nginx/sites-enabled/default /etc/nginx/sites-available/default
 
 # Configurar PHP
 COPY docker/php.ini /usr/local/etc/php/conf.d/custom.ini
-COPY docker/php-fpm-custom.conf /usr/local/etc/php-fpm.d/zz-custom.conf
 
 # Configurar Nginx
 COPY docker/nginx.conf /etc/nginx/nginx.conf
