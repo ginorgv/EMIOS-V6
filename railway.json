@@ -8,5 +8,12 @@
         "healthcheckPath": "/healthcheck.html",
         "restartPolicyType": "on_failure",
         "restartPolicyMaxRetries": 5
+    },
+    "networking": {
+        "serviceDomains": {
+            "": {
+                "port": 80
+            }
+        }
     }
 }
