@@ -13,26 +13,42 @@ fi
 
 # ============================================
 # Linux es sensible a mayúsculas (Windows no)
-# Crear enlaces simbólicos para variaciones
-# comunes de mayúsculas/minúsculas en includes
+# Y algunos includes tienen rutas incorrectas
+# Crear enlaces simbólicos para compatibilidad
 # ============================================
 cd /var/www/html/webemios
 
-# src/Modulos -> src/modulos (el más común)
+# src/Modulos -> src/modulos (mayúsculas)
 [ -d src/modulos ] && ln -sfn modulos src/Modulos 2>/dev/null || true
 
-# Otras variaciones que puedan existir
-for dir in \
-    "src/Modulos" \
-    "src/Lib" \
-    "src/BasesDatos"; do
-    lower_dir=$(echo "$dir" | tr 'A-Z' 'a-z')
-    if [ -d "$lower_dir" ] && [ ! -e "$dir" ]; then
-        parent=$(dirname "$dir")
-        base=$(basename "$dir" | tr 'A-Z' 'a-z')
-        ln -sfn "$base" "$parent/$(basename "$dir")" 2>/dev/null || true
+# Includes con rutas incorrectas (faltan subdirectorios)
+# src/lib/modulos/util_widgets.php -> src/lib/modulos/widgets/util_widgets.php
+mkdir -p src/lib/modulos/widgets
+for f in util_widgets.php util_pestanyas_widgets.php CuadriculaWidgets.php \
+         anyade_widget.php anyade_pestanya_widgets.php modifica_widget.php \
+         dame_informacion_widgets.php dame_informacion_widget.php \
+         muestra_ventana_anyadir_modificar_widget.php \
+         muestra_ventana_anyadir_modificar_pestanya_widgets.php; do
+    if [ -f "src/lib/modulos/widgets/$f" ] && [ ! -f "src/lib/modulos/$f" ]; then
+        ln -sfn "widgets/$f" "src/lib/modulos/$f" 2>/dev/null || true
     fi
 done
+
+# src/lib/modulos/util_informes_automaticos.php -> src/lib/modulos/InformesFichero/util_informes_automaticos.php
+if [ -f "src/lib/modulos/InformesFichero/util_informes_automaticos.php" ] && [ ! -f "src/lib/modulos/util_informes_automaticos.php" ]; then
+    ln -sfn "InformesFichero/util_informes_automaticos.php" "src/lib/modulos/util_informes_automaticos.php" 2>/dev/null || true
+fi
+
+# src/modulos/ModulosWeb/ModuloSmartmeter/util_tarifas.php -> Tarifas/util_tarifas.php
+if [ -f "src/modulos/ModulosWeb/ModuloSmartmeter/Tarifas/util_tarifas.php" ] && [ ! -f "src/modulos/ModulosWeb/ModuloSmartmeter/util_tarifas.php" ]; then
+    ln -sfn "Tarifas/util_tarifas.php" "src/modulos/ModulosWeb/ModuloSmartmeter/util_tarifas.php" 2>/dev/null || true
+fi
+
+# src/modulos/ModulosWeb/ModuloLocalizaciones/Ratio/Ratio.php -> Ratios/Ratio.php
+if [ -f "src/modulos/ModulosWeb/ModuloLocalizaciones/Ratios/Ratio.php" ]; then
+    mkdir -p "src/modulos/ModulosWeb/ModuloLocalizaciones/Ratio"
+    ln -sfn "../Ratios/Ratio.php" "src/modulos/ModulosWeb/ModuloLocalizaciones/Ratio/Ratio.php" 2>/dev/null || true
+fi
 
 # Crear directorio de sesiones si no existe
 mkdir -p /tmp/sessions
