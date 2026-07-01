@@ -29,6 +29,9 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
+# Eliminar sitio por defecto de Nginx que puede causar conflictos
+RUN rm -f /etc/nginx/sites-enabled/default /etc/nginx/sites-available/default
+
 # Configurar PHP
 COPY docker/php.ini /usr/local/etc/php/conf.d/custom.ini
 COPY docker/php-fpm-custom.conf /usr/local/etc/php-fpm.d/zz-custom.conf
